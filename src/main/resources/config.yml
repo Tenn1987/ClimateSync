@@ -1,0 +1,27 @@
+settings:
+  provider: OPENWEATHER
+  openWeather:
+    apiKey: "PUT_YOUR_KEY_HERE"
+    pollIntervalSeconds: 10800
+    minSecondsBetweenSameZoneCalls: 3600
+    baseUrl: "https://api.openweathermap.org/data/2.5/weather"
+    units: "metric"
+
+  debug:
+    showPrecipInZoneCommand: false
+
+  # Safety: does NOT touch mobs/biomes/datapacks.
+  safety:
+    modifyBlocks: false
+    modifyBiomes: false
+    modifyEntities: false
+
+  thresholds:
+    coldMaxC: 0.0
+    hotMinC: 30.0
+
+zones:
+  - n: 1
+    id: us_versailles_mo
+    lat: 38.4319
+    lon: -92.8416

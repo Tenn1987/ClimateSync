@@ -1,0 +1,16 @@
+name: ClimateSync
+version: 1.0.0
+main: com.brandon.climatesync.ClimateSyncPlugin
+api-version: "1.21"
+author: Brandon
+
+commands:
+  climatesync:
+    description: ClimateSync controls
+    usage: /climatesync <status|zone|refresh>
+    aliases: [csync, cs]
+
+permissions:
+  climatesync.admin:
+    description: Admin access to ClimateSync commands
+    default: op
