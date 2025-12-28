@@ -1,5 +1,5 @@
 name: ClimateSync
-version: 1.0.1
+version: 1.0.2
 main: com.brandon.climatesync.ClimateSyncPlugin
 api-version: "1.21"
 author: Brandon

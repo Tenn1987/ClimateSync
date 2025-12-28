@@ -3,10 +3,7 @@ package com.brandon.climatesync;
 import com.brandon.climatesync.command.ClimateSyncCommand;
 import com.brandon.climatesync.provider.OpenWeatherProvider;
 import com.brandon.climatesync.provider.WeatherProvider;
-import com.brandon.climatesync.service.ClimateClassifier;
-import com.brandon.climatesync.service.PollService;
-import com.brandon.climatesync.service.WorldWeatherDriver;
-import com.brandon.climatesync.service.ZoneRegistry;
+import com.brandon.climatesync.service.*;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.Objects;
@@ -16,6 +13,8 @@ public class ClimateSyncPlugin extends JavaPlugin {
     private ZoneRegistry zoneRegistry;
     private PollService pollService;
     private WorldWeatherDriver weatherDriver;
+    private SnowAccumulationService snowService;
+
 
     @Override
     public void onEnable() {
@@ -40,6 +39,10 @@ public class ClimateSyncPlugin extends JavaPlugin {
         pollService = new PollService(this, zoneRegistry, provider, classifier, pollIntervalSeconds, minBetweenSameZone);
         pollService.start();
 
+        snowService = new SnowAccumulationService(this, pollService);
+        snowService.start();
+
+
         ClimateSyncCommand cmd = new ClimateSyncCommand(
                 zoneRegistry,
                 pollService,
@@ -61,5 +64,6 @@ public class ClimateSyncPlugin extends JavaPlugin {
     public void onDisable() {
         if (weatherDriver != null) weatherDriver.stop();
         if (pollService != null) pollService.stop();
+        if (snowService != null) snowService.stop();
     }
 }
