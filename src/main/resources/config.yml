@@ -1,365 +1,361 @@
+# ClimateSync config.yml (WORKING TEMPLATE)
+# Key rule: safety MUST be under settings.safety (NOT at root), or the plugin will think modifyBlocks=false.
+
 settings:
   provider: OPENWEATHER
   openWeather:
     apiKey: "2ad87456e797367029f7350b3d82a3b8"
-    pollIntervalSeconds: 10800
-    minSecondsBetweenSameZoneCalls: 3600
+    pollIntervalSeconds: 10800            # 3 hours
+    minSecondsBetweenSameZoneCalls: 3600  # 1 hour
     baseUrl: "https://api.openweathermap.org/data/2.5/weather"
     units: "metric"
 
-    # Safety: control what the plugin is allowed to change.
-    # Snow accumulation REQUIRES modifyBlocks=true (snow layers are blocks).
-    safety:
-      modifyBlocks: true
-      modifyBiomes: false
-      modifyEntities: false
+  # Safety: Control what the plugin is allowed to change.
+  # Snow accumulation REQUIRES modifyBlocks=true (snow layers are blocks).
+  safety:
+    modifyBlocks: true
+    modifyBiomes: false
+    modifyEntities: false
 
-    debug:
-      showPrecipInZoneCommand: false
-      logWeatherApplies: false
-      logSnowPass: false
+  debug:
+    showPrecipInZoneCommand: false
+    logWeatherApplies: false
+    logSnowPass: false
 
-    thresholds:
-      coldMaxC: 0.0
-      hotMinC: 30.0
+  thresholds:
+    coldMaxC: 0.0
+    hotMinC: 30.0
 
-  weather:
-    enabled: true
-    mode: WORLD_GLOBAL
-    targetWorlds:
-      - world
-    driverZonePerWorld:
-      world: na_versailles_mo
-    durationTicks: 216000
-    thunderInHotWet: true
-    thunderChance: 0.35
+# WORLD weather toggles (rain/thunder) — still world-wide in WORLD_GLOBAL mode.
+# Regional variation comes from worldMapping + snow.source=MAPPED_ZONE.
+weather:
+  enabled: true
+  mode: WORLD_GLOBAL
+  targetWorlds:
+    - world
+  driverZonePerWorld:
+    world: na_versailles_mo
 
-  # World Mapping Phase (anchors)
-  # These do NOT change biomes/blocks/entities by themselves — they only map MC coords to zones.
-  worldMapping:
-    enabled: true
-    world: world
-    northAxis: "-Z"
-    selection: NEAREST
+  # 3 hours in ticks: 3*60*60*20 = 216000
+  durationTicks: 216000
 
-    anchors:
-      - zoneId: eu_london_gb
-        mcX: -38
-        mcZ: -5265
-        note: "London (West End)"
+  thunderInHotWet: true
+  thunderChance: 0.35
 
-      - zoneId: eu_rome_it
-        mcX: 1260
-        mcZ: -4643
-        note: "Rome"
+# World mapping: maps MC (x,z) to nearest anchor zone
+# NOTE: This does NOT change biomes/blocks/entities by itself.
+worldMapping:
+  enabled: true
+  world: world
+  northAxis: "-Z"
+  selection: NEAREST
 
-      - zoneId: na_new_york_ny
-        mcX: -7571
-        mcZ: -4162
-        note: "NYC"
+  anchors:
+    - zoneId: eu_london_gb
+      mcX: -38
+      mcZ: -5265
+      note: "London (West End)"
 
-      - zoneId: na_tampa_fl
-        mcX: -8449
-        mcZ: -2856
-        note: "Tampa"
+    - zoneId: na_new_york_ny
+      mcX: -7571
+      mcZ: -4162
+      note: "NYC"
 
-      - zoneId: as_seoul_kr
-        mcX: 13053
-        mcZ: -3898
-        note: "DMZ area (anchor)"
+    - zoneId: na_tampa_fl
+      mcX: -8449
+      mcZ: -2856
+      note: "Tampa"
 
-  # Snow Accumulation Service (SAS)
-  # Places/removes snow layers around players based on mapped zone temperature & wetness.
-  snow:
-    enabled: true
+    - zoneId: as_seoul_kr
+      mcX: 13053
+      mcZ: -3898
+      note: "DMZ area (anchor)"
 
-    # Source for temperature/wetness:
-    # - MAPPED_ZONE: uses nearest anchor zone to each player
-    # - DRIVER_ZONE: uses weather.driverZonePerWorld for the whole world
-    source: MAPPED_ZONE
+    - zoneId: eu_rome_it
+      mcX: 1260
+      mcZ: -4643
+      note: "Rome"
 
-    thresholds:
-      snowAtOrBelowC: 0.0
-      blizzardAtOrBelowC: -5.0
-      meltAtOrAboveC: 1.5
+# Snow Accumulation Service (SAS)
+# Places/removes snow layers around players based on mapped zone temperature & wetness.
+snow:
+  enabled: true
 
-    accumulation:
-      normalMaxLayers: 3
-      blizzardMaxLayers: 8
-      blizzardRequiresWet: true
+  # Source for temperature/wetness:
+  # - MAPPED_ZONE: uses worldMapping anchors (nearest anchor zone to each player)
+  # - DRIVER_ZONE: uses weather.driverZonePerWorld for the whole world
+  source: MAPPED_ZONE
 
-    mode: AROUND_PLAYERS
-    radiusBlocks: 96
-    maxBlocksPerRun: 4000
-    tickIntervalSeconds: 20
+  thresholds:
+    snowAtOrBelowC: 0.0
+    blizzardAtOrBelowC: -5.0
+    meltAtOrAboveC: 1.5
 
-    placeSnowLayers: true
+  accumulation:
+    normalMaxLayers: 3
+    blizzardMaxLayers: 8
+    blizzardRequiresWet: true
 
-    # Optional (off by default)
-    freezeWater: false
-    meltIce: false
+  mode: AROUND_PLAYERS
+  radiusBlocks: 96
+  maxBlocksPerRun: 4000
+  tickIntervalSeconds: 20
 
-  zones:
-    - n: 1
-      id: na_versailles_mo
-      lat: 38.4319
-      lon: -92.8416
+  placeSnowLayers: true
 
-    - n: 2
-      id: na_washington_dc
-      lat: 38.9072
-      lon: -77.0369
-    - n: 3
-      id: na_new_york_ny
-      lat: 40.7128
-      lon: -74.0060
-    - n: 4
-      id: na_boston_ma
-      lat: 42.3601
-      lon: -71.0589
-    - n: 5
-      id: na_miami_fl
-      lat: 25.7617
-      lon: -80.1918
-    - n: 6
-      id: na_new_orleans_la
-      lat: 29.9511
-      lon: -90.0715
-    - n: 7
-      id: na_chicago_il
-      lat: 41.8781
-      lon: -87.6298
-    - n: 8
-      id: na_denver_co
-      lat: 39.7392
-      lon: -104.9903
-    - n: 9
-      id: na_phoenix_az
-      lat: 33.4484
-      lon: -112.0740
-    - n: 10
-      id: na_los_angeles_ca
-      lat: 34.0522
-      lon: -118.2437
-    - n: 11
-      id: na_seattle_wa
-      lat: 47.6062
-      lon: -122.3321
-    - n: 12
-      id: na_anchorage_ak
-      lat: 61.2181
-      lon: -149.9003
-    - n: 13
-      id: na_toronto_on
-      lat: 43.6532
-      lon: -79.3832
-    - n: 14
-      id: na_montreal_qc
-      lat: 45.5019
-      lon: -73.5674
-    - n: 15
-      id: na_mexico_city_mx
-      lat: 19.4326
-      lon: -99.1332
-    - n: 16
-      id: na_guanajuato_mx
-      lat: 21.0190
-      lon: -101.2574
-    - n: 17
-      id: na_tampa_fl
-      lat: 27.9506
-      lon: -82.4572
+  # Optional extras (leave false until you want them)
+  freezeWater: false
+  meltIce: false
 
-    - n: 18
-      id: sa_sao_paulo_br
-      lat: -23.5558
-      lon: -46.6396
-    - n: 19
-      id: sa_rio_de_janeiro_br
-      lat: -22.9068
-      lon: -43.1729
-    - n: 20
-      id: sa_buenos_aires_ar
-      lat: -34.6037
-      lon: -58.3816
-    - n: 21
-      id: sa_santiago_cl
-      lat: -33.4489
-      lon: -70.6693
-    - n: 22
-      id: sa_lima_pe
-      lat: -12.0464
-      lon: -77.0428
-    - n: 23
-      id: sa_bogota_co
-      lat: 4.7110
-      lon: -74.0721
-    - n: 24
-      id: sa_caracas_ve
-      lat: 10.4806
-      lon: -66.9036
+# Zones (Top 50, spaced far apart / not clustered within ~100 miles)
+# ID format: continent_city == NA_Versailles_MO style (lowercase here, as requested earlier)
+zones:
+  - n: 1
+    id: na_versailles_mo
+    lat: 38.4319
+    lon: -92.8416
 
-    - n: 25
-      id: eu_london_gb
-      lat: 51.5074
-      lon: -0.1278
-    - n: 26
-      id: eu_paris_fr
-      lat: 48.8566
-      lon: 2.3522
-    - n: 27
-      id: eu_madrid_es
-      lat: 40.4168
-      lon: -3.7038
-    - n: 28
-      id: eu_lisbon_pt
-      lat: 38.7223
-      lon: -9.1393
-    - n: 29
-      id: eu_rome_it
-      lat: 41.9028
-      lon: 12.4964
-    - n: 30
-      id: eu_berlin_de
-      lat: 52.5200
-      lon: 13.4050
-    - n: 31
-      id: eu_vienna_at
-      lat: 48.2082
-      lon: 16.3738
-    - n: 32
-      id: eu_warsaw_pl
-      lat: 52.2297
-      lon: 21.0122
-    - n: 33
-      id: eu_moscow_ru
-      lat: 55.7558
-      lon: 37.6173
-    - n: 34
-      id: eu_oslo_no
-      lat: 59.9139
-      lon: 10.7522
-    - n: 35
-      id: eu_reykjavik_is
-      lat: 64.1466
-      lon: -21.9426
-    - n: 36
-      id: eu_istanbul_tr
-      lat: 41.0082
-      lon: 28.9784
-    - n: 37
-      id: eu_athens_gr
-      lat: 37.9838
-      lon: 23.7275
-    - n: 38
-      id: eu_dublin_ie
-      lat: 53.3498
-      lon: -6.2603
+  - n: 2
+    id: na_new_york_ny
+    lat: 40.7128
+    lon: -74.0060
 
-    - n: 39
-      id: me_jerusalem_il
-      lat: 31.7683
-      lon: 35.2137
-    - n: 40
-      id: me_baghdad_iq
-      lat: 33.3152
-      lon: 44.3661
-    - n: 41
-      id: me_riyadh_sa
-      lat: 24.7136
-      lon: 46.6753
-    - n: 42
-      id: me_dubai_ae
-      lat: 25.2048
-      lon: 55.2708
-    - n: 43
-      id: me_tehran_ir
-      lat: 35.6892
-      lon: 51.3890
+  - n: 3
+    id: na_los_angeles_ca
+    lat: 34.0522
+    lon: -118.2437
 
-    - n: 44
-      id: af_cairo_eg
-      lat: 30.0444
-      lon: 31.2357
-    - n: 45
-      id: af_lagos_ng
-      lat: 6.5244
-      lon: 3.3792
-    - n: 46
-      id: af_nairobi_ke
-      lat: -1.2921
-      lon: 36.8219
-    - n: 47
-      id: af_addis_ababa_et
-      lat: 8.9806
-      lon: 38.7578
-    - n: 48
-      id: af_johannesburg_za
-      lat: -26.2041
-      lon: 28.0473
-    - n: 49
-      id: af_cape_town_za
-      lat: -33.9249
-      lon: 18.4241
+  - n: 4
+    id: na_chicago_il
+    lat: 41.8781
+    lon: -87.6298
 
-    - n: 50
-      id: as_tokyo_jp
-      lat: 35.6895
-      lon: 139.6917
-    - n: 51
-      id: as_beijing_cn
-      lat: 39.9042
-      lon: 116.4074
-    - n: 52
-      id: as_shanghai_cn
-      lat: 31.2304
-      lon: 121.4737
-    - n: 53
-      id: as_seoul_kr
-      lat: 37.5665
-      lon: 126.9780
-    - n: 54
-      id: as_hanoi_vn
-      lat: 21.0278
-      lon: 105.8342
-    - n: 55
-      id: as_bangkok_th
-      lat: 13.7563
-      lon: 100.5018
-    - n: 56
-      id: as_manila_ph
-      lat: 14.5995
-      lon: 120.9842
-    - n: 57
-      id: as_jakarta_id
-      lat: -6.2088
-      lon: 106.8456
-    - n: 58
-      id: as_mumbai_in
-      lat: 19.0760
-      lon: 72.8777
-    - n: 59
-      id: as_delhi_in
-      lat: 28.6139
-      lon: 77.2090
-    - n: 60
-      id: as_kabul_af
-      lat: 34.5553
-      lon: 69.2075
-    - n: 61
-      id: as_singapore_sg
-      lat: 1.3521
-      lon: 103.8198
+  - n: 5
+    id: na_denver_co
+    lat: 39.7392
+    lon: -104.9903
 
-    - n: 62
-      id: oc_sydney_au
-      lat: -33.8688
-      lon: 151.2093
-    - n: 63
-      id: oc_perth_au
-      lat: -31.9523
-      lon: 115.8613
-    - n: 64
-      id: oc_auckland_nz
-      lat: -36.8509
-      lon: 174.7645
+  - n: 6
+    id: na_seattle_wa
+    lat: 47.6062
+    lon: -122.3321
+
+  - n: 7
+    id: na_miami_fl
+    lat: 25.7617
+    lon: -80.1918
+
+  - n: 8
+    id: na_tampa_fl
+    lat: 27.9506
+    lon: -82.4572
+
+  - n: 9
+    id: na_dallas_tx
+    lat: 32.7767
+    lon: -96.7970
+
+  - n: 10
+    id: na_washington_dc
+    lat: 38.9072
+    lon: -77.0369
+
+  - n: 11
+    id: na_toronto_ca
+    lat: 43.6532
+    lon: -79.3832
+
+  - n: 12
+    id: na_mexico_city_mx
+    lat: 19.4326
+    lon: -99.1332
+
+  - n: 13
+    id: sa_sao_paulo_br
+    lat: -23.5558
+    lon: -46.6396
+
+  - n: 14
+    id: sa_rio_de_janeiro_br
+    lat: -22.9068
+    lon: -43.1729
+
+  - n: 15
+    id: sa_buenos_aires_ar
+    lat: -34.6037
+    lon: -58.3816
+
+  - n: 16
+    id: sa_santiago_cl
+    lat: -33.4489
+    lon: -70.6693
+
+  - n: 17
+    id: eu_london_gb
+    lat: 51.5074
+    lon: -0.1278
+
+  - n: 18
+    id: eu_paris_fr
+    lat: 48.8566
+    lon: 2.3522
+
+  - n: 19
+    id: eu_berlin_de
+    lat: 52.5200
+    lon: 13.4050
+
+  - n: 20
+    id: eu_madrid_es
+    lat: 40.4168
+    lon: -3.7038
+
+  - n: 21
+    id: eu_rome_it
+    lat: 41.9028
+    lon: 12.4964
+
+  - n: 22
+    id: eu_vienna_at
+    lat: 48.2082
+    lon: 16.3738
+
+  - n: 23
+    id: eu_warsaw_pl
+    lat: 52.2297
+    lon: 21.0122
+
+  - n: 24
+    id: eu_stockholm_se
+    lat: 59.3293
+    lon: 18.0686
+
+  - n: 25
+    id: eu_oslo_no
+    lat: 59.9139
+    lon: 10.7522
+
+  - n: 26
+    id: eu_helsinki_fi
+    lat: 60.1699
+    lon: 24.9384
+
+  - n: 27
+    id: eu_athens_gr
+    lat: 37.9838
+    lon: 23.7275
+
+  - n: 28
+    id: eu_istanbul_tr
+    lat: 41.0082
+    lon: 28.9784
+
+  - n: 29
+    id: eu_moscow_ru
+    lat: 55.7558
+    lon: 37.6173
+
+  - n: 30
+    id: af_cairo_eg
+    lat: 30.0444
+    lon: 31.2357
+
+  - n: 31
+    id: af_nairobi_ke
+    lat: -1.2921
+    lon: 36.8219
+
+  - n: 32
+    id: af_lagos_ng
+    lat: 6.5244
+    lon: 3.3792
+
+  - n: 33
+    id: af_johannesburg_za
+    lat: -26.2041
+    lon: 28.0473
+
+  - n: 34
+    id: af_casablanca_ma
+    lat: 33.5731
+    lon: -7.5898
+
+  - n: 35
+    id: me_baghdad_iq
+    lat: 33.3152
+    lon: 44.3661
+
+  - n: 36
+    id: me_riyadh_sa
+    lat: 24.7136
+    lon: 46.6753
+
+  - n: 37
+    id: me_tehran_ir
+    lat: 35.6892
+    lon: 51.3890
+
+  - n: 38
+    id: me_dubai_ae
+    lat: 25.2048
+    lon: 55.2708
+
+  - n: 39
+    id: me_jerusalem_il
+    lat: 31.7683
+    lon: 35.2137
+
+  - n: 40
+    id: as_delhi_in
+    lat: 28.6139
+    lon: 77.2090
+
+  - n: 41
+    id: as_mumbai_in
+    lat: 19.0760
+    lon: 72.8777
+
+  - n: 42
+    id: as_beijing_cn
+    lat: 39.9042
+    lon: 116.4074
+
+  - n: 43
+    id: as_shanghai_cn
+    lat: 31.2304
+    lon: 121.4737
+
+  - n: 44
+    id: as_tokyo_jp
+    lat: 35.6762
+    lon: 139.6503
+
+  - n: 45
+    id: as_seoul_kr
+    lat: 37.5665
+    lon: 126.9780
+
+  - n: 46
+    id: as_bangkok_th
+    lat: 13.7563
+    lon: 100.5018
+
+  - n: 47
+    id: as_singapore_sg
+    lat: 1.3521
+    lon: 103.8198
+
+  - n: 48
+    id: oc_sydney_au
+    lat: -33.8688
+    lon: 151.2093
+
+  - n: 49
+    id: oc_auckland_nz
+    lat: -36.8485
+    lon: 174.7633
+
+  - n: 50
+    id: oc_perth_au
+    lat: -31.9523
+    lon: 115.8613
