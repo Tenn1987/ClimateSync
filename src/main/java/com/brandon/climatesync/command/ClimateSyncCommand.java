@@ -19,7 +19,7 @@ public class ClimateSyncCommand implements CommandExecutor, TabCompleter {
     public ClimateSyncCommand(ZoneRegistry zones, PollService poll, BooleanSupplier showPrecip) {
         this.zones = zones;
         this.poll = poll;
-        this.showPrecip = showPrecip;
+        this.showPrecip = (showPrecip == null ? () -> false : showPrecip);
     }
 
     private boolean perm(CommandSender sender) {
@@ -62,25 +62,23 @@ public class ClimateSyncCommand implements CommandExecutor, TabCompleter {
                 sender.sendMessage("§eTempC: §f" + String.format(Locale.US, "%.2f", s.tempC()));
                 sender.sendMessage("§eWet: §f" + s.wet());
                 sender.sendMessage("§eObserved: §f" + s.observedMain());
+                sender.sendMessage("§eUpdated: §f" + Instant.ofEpochSecond(s.updatedEpochSeconds()));
 
                 if (showPrecip.getAsBoolean()) {
                     sender.sendMessage("§ePrecip (" + s.windowHours() + "h): §fRain="
                             + String.format(Locale.US, "%.2f", s.rainMm())
-                            + "mm  Snow="
-                            + String.format(Locale.US, "%.2f", s.snowMm()) + "mm");
+                            + "mm  Snow=" + String.format(Locale.US, "%.2f", s.snowMm()) + "mm");
                 }
-
-                sender.sendMessage("§eUpdated: §f" + Instant.ofEpochSecond(s.updatedEpochSeconds()));
                 return true;
             }
             case "refresh" -> {
                 if (args.length == 1 || args[1].equalsIgnoreCase("all")) {
-                    sender.sendMessage("§aRefreshing all zones...");
+                    sender.sendMessage("§aRefreshing all zones.");
                     poll.refreshAllNow();
                     return true;
                 }
                 String id = args[1].toLowerCase(Locale.ROOT);
-                sender.sendMessage("§aRefreshing zone §f" + id + "§a...");
+                sender.sendMessage("§aRefreshing zone §f" + id + "§a.");
                 poll.refreshZoneNow(id);
                 return true;
             }

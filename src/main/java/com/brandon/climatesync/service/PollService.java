@@ -58,10 +58,16 @@ public class PollService {
 
     public boolean isRunning() { return running.get(); }
     public int snapshotCount() { return snapshots.size(); }
-    public Optional<ClimateSnapshot> snapshot(String zoneId) { return Optional.ofNullable(snapshots.get(zoneId.toLowerCase())); }
+    public Optional<ClimateSnapshot> snapshot(String zoneId) {
+        if (zoneId == null) return Optional.empty();
+        return Optional.ofNullable(snapshots.get(zoneId.toLowerCase()));
+    }
 
     public void refreshAllNow() { exec.submit(this::pollAll); }
-    public void refreshZoneNow(String zoneId) { zones.get(zoneId).ifPresent(z -> exec.submit(() -> pollOne(z, true))); }
+    public void refreshZoneNow(String zoneId) {
+        if (zoneId == null) return;
+        zones.get(zoneId).ifPresent(z -> exec.submit(() -> pollOne(z, true)));
+    }
 
     private void pollAll() {
         if (!running.get()) return;

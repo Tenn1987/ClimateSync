@@ -5,6 +5,7 @@ import com.brandon.climatesync.provider.OpenWeatherProvider;
 import com.brandon.climatesync.provider.WeatherProvider;
 import com.brandon.climatesync.service.ClimateClassifier;
 import com.brandon.climatesync.service.PollService;
+import com.brandon.climatesync.service.WorldWeatherDriver;
 import com.brandon.climatesync.service.ZoneRegistry;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -14,6 +15,7 @@ public class ClimateSyncPlugin extends JavaPlugin {
 
     private ZoneRegistry zoneRegistry;
     private PollService pollService;
+    private WorldWeatherDriver weatherDriver;
 
     @Override
     public void onEnable() {
@@ -38,18 +40,26 @@ public class ClimateSyncPlugin extends JavaPlugin {
         pollService = new PollService(this, zoneRegistry, provider, classifier, pollIntervalSeconds, minBetweenSameZone);
         pollService.start();
 
-        ClimateSyncCommand cmd = new ClimateSyncCommand(zoneRegistry, pollService,
+        ClimateSyncCommand cmd = new ClimateSyncCommand(
+                zoneRegistry,
+                pollService,
                 () -> getConfig().getBoolean("settings.debug.showPrecipInZoneCommand", false)
         );
+
         Objects.requireNonNull(getCommand("climatesync")).setExecutor(cmd);
         Objects.requireNonNull(getCommand("climatesync")).setTabCompleter(cmd);
 
+        // Weather driver (world-global)
+        weatherDriver = new WorldWeatherDriver(this, pollService);
+        weatherDriver.start();
+
         getLogger().info("ClimateSync enabled. Zones loaded: " + zoneRegistry.size());
-        getLogger().info("SAFETY: This plugin does NOT modify entities/biomes/datapacks. Weather polling only.");
+        getLogger().info("SAFETY: This plugin does NOT modify entities/biomes/datapacks by default. Weather driver toggles only.");
     }
 
     @Override
     public void onDisable() {
+        if (weatherDriver != null) weatherDriver.stop();
         if (pollService != null) pollService.stop();
     }
 }
