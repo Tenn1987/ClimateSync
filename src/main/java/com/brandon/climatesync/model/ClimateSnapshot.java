@@ -3,15 +3,12 @@ package com.brandon.climatesync.model;
 public record ClimateSnapshot(
         String zoneId,
         ClimateState state,
-        boolean thunder,
-        boolean wet,
         double tempC,
+        boolean wet,
+        boolean thunder,
         String observedMain,
-
-        // new fields
-        double rainMm,
-        double snowMm,
+        long updatedEpochSeconds,
         int windowHours,
-
-        long updatedEpochSeconds
-) {}
+        double rainMm,
+        double snowMm
+) { }

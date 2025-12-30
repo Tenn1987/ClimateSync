@@ -51,20 +51,70 @@ worldMapping:
   selection: NEAREST
 
   anchors:
-    - zoneId: eu_london_gb
-      mcX: -38
-      mcZ: -5265
-      note: "London (West End)"
+    - zoneId: na_versailles_mo
+      mcX: -9504
+      mcZ: -3922
+      note: "Versailles MO"
 
     - zoneId: na_new_york_ny
       mcX: -7571
       mcZ: -4162
       note: "NYC"
 
+    - zoneId: na_los_angeles_ca
+      lat: -12095
+      lon: -3461
+      note: "Los Angeles"
+
+    - zoneId: na_chicago_il
+      lat: -8978
+      lon: -4291
+      note: "Chicago"
+
+    - zoneId: na_denver_co
+      lat: -10744
+      lon: -4077
+      note: "Denver"
+
+    - zoneId: na_seattle_wa
+      lat: -12524
+      lon: -4856
+      note: "Seattle"
+
+    - zoneId: na_miami_fl
+    - lat: -8210
+    - lon: -2639
+      note: "Miami"
+
     - zoneId: na_tampa_fl
       mcX: -8449
       mcZ: -2856
       note: "Tampa"
+
+    - zoneId: na_dallas_tx
+      lat: -9965
+      lon: -3357
+      note: "Dallas"
+
+    - zoneId: na_washington_dc
+      lat: -7888
+      lon: -3986
+      note: "Washington DC"
+
+    - zoneId: na_toronto_ca
+      lat: -8139
+      lon: -4475
+      note: "Toronto"
+
+    - zoneId: na_mexico_city_mx
+      lat: -10127
+      lon: -2023
+      note: "Mexico City"
+
+    - zoneId: eu_london_gb
+      mcX: -38
+      mcZ: -5265
+      note: "London (West End)"
 
     - zoneId: as_seoul_kr
       mcX: 13053
@@ -104,8 +154,8 @@ snow:
   placeSnowLayers: true
 
   # Optional extras (leave false until you want them)
-  freezeWater: false
-  meltIce: false
+  freezeWater: true
+  meltIce: true
 
 # Zones (Top 50, spaced far apart / not clustered within ~100 miles)
 # ID format: continent_city == NA_Versailles_MO style (lowercase here, as requested earlier)
